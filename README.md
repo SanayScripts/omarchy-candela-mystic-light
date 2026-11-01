@@ -2,6 +2,9 @@
 
 Keyboard backlight panel for [Omarchy](https://omarchy.org) 4. Set the colour, brightness and the keyboard's built-in effects from a panel in the bar. It follows your Omarchy theme if you want it to.
 
+![Candela panel](docs/panel.png)
+
+
 Nothing runs in the background. Each change is one short `openrgb` call, and the last state is restored when the shell starts.
 
 ## Supported hardware
