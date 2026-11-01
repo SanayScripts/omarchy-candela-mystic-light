@@ -53,7 +53,7 @@ Click the keyboard icon in the bar.
 - **Colour:** presets, RGB sliders, a hex field, or the current theme colour. Spectrum modes ignore the colour.
 - **Brightness:** 5 steps, the same as the hardware.
 - **Speed:** 3 steps for the animated modes.
-- **Off / On / Sync theme.**
+- **Power switch** (on/off, like the other Omarchy widgets) and **Sync theme**.
 
 Sliders send one command when you let go, not while dragging.
 

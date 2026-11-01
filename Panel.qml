@@ -247,6 +247,34 @@ Panel {
     MouseArea { anchors.fill: parent; onClicked: b.clicked() }
   }
 
+  // Omarchy-style on/off switch: square knob, right when on.
+  component Toggle: Item {
+    id: t
+    property bool on: false
+    signal toggled()
+    implicitWidth: Style.space(36)
+    implicitHeight: Style.space(28)
+    Rectangle {
+      anchors.centerIn: parent
+      width: Style.space(36)
+      height: Style.space(16)
+      radius: 3
+      color: t.on ? Qt.alpha(root.barForeground, 0.18) : "transparent"
+      border.width: 1
+      border.color: t.on ? root.barForeground : root.dim
+      Rectangle {
+        width: Style.space(10)
+        height: Style.space(10)
+        radius: 2
+        anchors.verticalCenter: parent.verticalCenter
+        x: t.on ? parent.width - width - 3 : 3
+        color: t.on ? root.barForeground : root.dim
+        Behavior on x { NumberAnimation { duration: 120 } }
+      }
+    }
+    MouseArea { anchors.fill: parent; onClicked: t.toggled() }
+  }
+
   component Slide: Item {
     id: s
     property real value: 0
@@ -481,19 +509,18 @@ Panel {
           Row {
             width: parent.width
             spacing: Style.space(6)
-            Btn {
-              width: (content.width - Style.space(12)) / 3
-              label: "Off"
-              active: root.st.mode === "Off"
-              onClicked: { root.setState({ mode: "Off" }); root.apply() }
+            Toggle {
+              width: (content.width - Style.space(12)) * 0.28
+              height: Style.space(28)
+              on: root.st.mode !== "Off"
+              onToggled: {
+                if (root.st.mode === "Off") root.setState({ mode: root.st.lastOn })
+                else root.setState({ mode: "Off" })
+                root.apply()
+              }
             }
             Btn {
-              width: (content.width - Style.space(12)) / 3
-              label: "On"
-              onClicked: { root.setState({ mode: root.st.mode === "Off" ? root.st.lastOn : root.st.mode }); root.apply() }
-            }
-            Btn {
-              width: (content.width - Style.space(12)) / 3
+              width: (content.width - Style.space(12)) * 0.44
               label: "Sync theme"
               active: root.st.follow
               onClicked: {
