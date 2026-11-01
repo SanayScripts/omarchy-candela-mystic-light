@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Runs every automated check. Needs node 20+. Qt tools are used when present.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+chmod +x tests/bin/fake-rgb-cli
+
+echo "== node: unit, integration (fake openrgb), static checks"
+node --test tests/*.test.mjs
+
+qtr=""
+for c in /usr/lib/qt6/bin/qmltestrunner qmltestrunner6 qmltestrunner; do
+  if command -v "$c" >/dev/null 2>&1; then qtr="$c"; break; fi
+done
+if [ -n "$qtr" ]; then
+  echo "== qml: Logic.js inside Qt's JS engine"
+  QT_QPA_PLATFORM=offscreen "$qtr" -input tests/qml
+else
+  echo "== qml: qmltestrunner not found, SKIPPED"
+  [ -z "${CI:-}" ] || exit 1
+fi
+
+if command -v omarchy >/dev/null 2>&1; then
+  echo "== omarchy plugin validate"
+  omarchy plugin validate "$PWD"
+fi
+
+lint=""
+for c in /usr/lib/qt6/bin/qmllint qmllint6 qmllint; do
+  if command -v "$c" >/dev/null 2>&1; then lint="$c"; break; fi
+done
+if [ -n "$lint" ] && [ -n "${OMARCHY_PATH:-}" ]; then
+  echo "== qmllint against the installed shell"
+  "$lint" -I "$OMARCHY_PATH/shell" BarWidget.qml Panel.qml
+fi
+
+echo "all checks passed"

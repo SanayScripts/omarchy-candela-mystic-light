@@ -1,0 +1,12 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    steps:
+      - name: Install tools
+        run: pacman -Syu --noconfirm nodejs git qt6-declarative
+      - uses: actions/checkout@v4
+      - name: Run checks
+        run: CI=1 ./bin/test

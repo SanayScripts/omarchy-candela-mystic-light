@@ -1,0 +1,5 @@
+# Candela: let the logged-in desktop user talk to MSI Mystic Light MS-1562/1563/1564 keyboards.
+# Only needed if `openrgb --list-devices` shows nothing as a normal user.
+# The openrgb package may already ship equivalent rules.
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1462", ATTRS{idProduct}=="1562|1563|1564", TAG+="uaccess"
+SUBSYSTEM=="usb", ATTRS{idVendor}=="1462", ATTRS{idProduct}=="1562|1563|1564", TAG+="uaccess"

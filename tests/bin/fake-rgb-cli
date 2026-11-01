@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+# Fake OpenRGB 1.1 CLI for tests. It is strict on purpose: unknown flags, bad values and the wrong
+# device index all fail, so a bad command from the plugin fails the test.
+#
+#   FAKE_OPENRGB_MODE = ok (default) | old | hang | fail | nodevice
+#   FAKE_OPENRGB_LOG  = file that gets one line per call, arguments joined with "|"
+
+mode="${FAKE_OPENRGB_MODE:-ok}"
+log="${FAKE_OPENRGB_LOG:-/dev/null}"
+( IFS='|'; echo "$*" ) >> "$log"
+
+if [ "${1:-}" = "--version" ]; then
+  if [ "$mode" = old ]; then
+    printf 'OpenRGB 0.9, for controlling RGB lighting.\n  Version:\t\t 0.9\n'
+  else
+    printf 'OpenRGB 1.1, for controlling RGB lighting.\n  Version:\t\t 1.1\n  Build Date\t\t Sat, 17 Oct 2026 15:01:58 +0000\n'
+  fi
+  exit 0
+fi
+
+if [ "${1:-}" = "--list-devices" ]; then
+  if [ "$mode" != nodevice ]; then
+    printf '0: E-Signal USB Gaming Mouse\n  Type:        Mouse\n  Modes:       Direct Static\n'
+    printf '1: MSI MysticLight MS-1563 v0001\n  Type:        Keyboard\n  Modes:       Off Static Breathing Flashing "Double Flashing" "Spectrum Cycle" "Smooth Spectrum Cycle"\n'
+  fi
+  exit 0
+fi
+
+dev=""; m=""; c=""; b=""; sp=""
+while [ $# -gt 0 ]; do
+  [ $# -ge 2 ] || { echo "Error: missing value for $1" >&2; exit 2; }
+  case "$1" in
+    -d|--device)     dev="$2" ;;
+    -m|--mode)       m="$2" ;;
+    -c|--color)      c="$2" ;;
+    -b|--brightness) b="$2" ;;
+    --speed)         sp="$2" ;;
+    *) echo "Error: unknown argument $1" >&2; exit 2 ;;
+  esac
+  shift 2
+done
+
+case "$mode" in
+  hang) sleep 30; exit 0 ;;
+  fail) echo "Error: device error" >&2; exit 1 ;;
+esac
+
+[[ "$dev" =~ ^[0-9]+$ ]] || { echo "Error: Invalid device ID" >&2; exit 1; }
+[ "$dev" -le 1 ] || { echo "Error: Invalid device ID: $dev" >&2; exit 1; }
+
+if [ "$dev" = 0 ]; then
+  echo "Error: Mode '$m' not available for device 'E-Signal USB Gaming Mouse'" >&2
+  exit 1
+fi
+
+case "$m" in
+  "Off"|"Static"|"Breathing"|"Flashing"|"Double Flashing"|"Spectrum Cycle"|"Smooth Spectrum Cycle") ;;
+  *) echo "Error: Mode '$m' not available for device 'MSI MysticLight MS-1563 v0001'" >&2; exit 1 ;;
+esac
+
+if [ -n "$c" ] && ! [[ "$c" =~ ^[0-9a-fA-F]{6}$ ]]; then echo "Error: bad color" >&2; exit 1; fi
+if [ -n "$b" ] && { ! [[ "$b" =~ ^[0-9]+$ ]] || [ "$b" -gt 100 ]; }; then echo "Error: bad brightness" >&2; exit 1; fi
+if [ -n "$sp" ] && { ! [[ "$sp" =~ ^[0-9]+$ ]] || [ "$sp" -gt 100 ]; }; then echo "Error: bad speed" >&2; exit 1; fi
+if [ "$m" = "Static" ] && [ -n "$sp" ]; then echo "Error: Static has no speed" >&2; exit 1; fi
+
+exit 0
