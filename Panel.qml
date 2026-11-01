@@ -342,9 +342,25 @@ Panel {
           width: parent.width
           spacing: Style.space(10)
           Rectangle {
+            id: swatch
+            readonly property bool cycling: root.st.mode === "Spectrum Cycle" || root.st.mode === "Smooth Spectrum Cycle"
             width: Style.space(36); height: Style.space(36); radius: 4
-            color: "#" + root.st.hex
+            color: cycling ? "transparent" : "#" + root.st.hex
             border.width: 1; border.color: root.barForeground
+            clip: true
+            // Cycling modes have no single colour, so show the spectrum they sweep through.
+            gradient: cycling ? rainbow : null
+            Gradient {
+              id: rainbow
+              orientation: Gradient.Horizontal
+              GradientStop { position: 0.0; color: "#ff0000" }
+              GradientStop { position: 0.17; color: "#ffff00" }
+              GradientStop { position: 0.33; color: "#00ff00" }
+              GradientStop { position: 0.5; color: "#00ffff" }
+              GradientStop { position: 0.67; color: "#0000ff" }
+              GradientStop { position: 0.83; color: "#ff00ff" }
+              GradientStop { position: 1.0; color: "#ff0000" }
+            }
           }
           Column {
             anchors.verticalCenter: parent.verticalCenter
@@ -469,11 +485,6 @@ Panel {
                 }
               }
             }
-            Btn {
-              width: Style.space(110)
-              label: "Theme color"
-              onClicked: root.useTheme()
-            }
           }
 
           Text {
@@ -521,7 +532,7 @@ Panel {
             }
             Btn {
               width: (content.width - Style.space(12)) * 0.44
-              label: "Sync theme"
+              label: "Match theme"
               active: root.st.follow
               onClicked: {
                 root.setState({ follow: !root.st.follow })

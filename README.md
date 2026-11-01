@@ -50,10 +50,10 @@ The keyboard keeps its last colour until the next reboot. If you installed the o
 Click the keyboard icon in the bar.
 
 - **Modes:** Static, Breathe, Flash, Double, Spectrum, Smooth. The hardware runs the effects itself.
-- **Colour:** presets, RGB sliders, a hex field, or the current theme colour. Spectrum modes ignore the colour.
+- **Colour:** presets, RGB sliders, a hex field. **Match theme** sets the keyboard to your theme colour and keeps it there. Spectrum modes ignore the colour.
 - **Brightness:** 5 steps, the same as the hardware.
 - **Speed:** 3 steps for the animated modes.
-- **Power switch** (on/off, like the other Omarchy widgets) and **Sync theme**.
+- **Power switch** (on/off, like the other Omarchy widgets) and **Match theme**.
 
 Sliders send one command when you let go, not while dragging.
 

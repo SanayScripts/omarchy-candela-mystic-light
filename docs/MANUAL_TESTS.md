@@ -4,7 +4,7 @@ The automated tests use a fake `openrgb`. These steps need the real keyboard. Ru
 
 1. Cold start: restart the shell (`omarchy restart shell`). With no saved state the keyboard must not change.
 2. Open the panel. Pick each of the six modes. Each must visibly change the keyboard.
-3. Static: click a preset, drag each RGB slider, type a hex value, use Theme color.
+3. Static: click a preset, drag each RGB slider, type a hex value, turn Match theme on and off.
 4. Brightness: step through 1 to 5. Five distinct levels should show. Note whether any two look the same.
 5. Speed on Breathing: step through 1 to 3. Note which end is faster (not yet verified) and update the README.
 6. Off, then On. On must return to the previous mode and colour.
